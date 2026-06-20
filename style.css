@@ -1,0 +1,6 @@
+body { background: #0b0f19; color: white; font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; min-height: 100vh; }
+.container { display: flex; width: 90%; max-width: 1100px; gap: 50px; padding: 50px; }
+.hero { flex: 1; }
+.display { flex: 1; background: #1e293b; border-radius: 20px; display: flex; align-items: center; justify-content: center; min-height: 400px; border: 1px solid #334155; }
+input { width: 100%; padding: 15px; border-radius: 10px; border: none; background: #1e293b; color: white; margin: 20px 0; }
+button { background: linear-gradient(90deg, #6366f1, #a855f7); padding: 15px 30px; border: none; border-radius: 10px; color: white; cursor: pointer; font-weight: bold; }
