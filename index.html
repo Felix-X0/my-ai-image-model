@@ -1,21 +1,261 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIAU AI - Professional Image Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* Custom animation untuk loading */
+        @keyframes purr {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+        .animate-purr {
+            animation: purr 1.5s infinite ease-in-out;
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <section class="hero">
-            <h1>MIAU AI</h1>
-            <p>Turn your imagination into stunning images</p>
-            <input type="text" id="prompt" placeholder="Describe what you imagine...">
-            <button onclick="generate()">Create. Imagine. Inspire.</button>
-        </section>
+<body class="bg-[#f8fafc] text-slate-900 min-h-screen flex flex-col">
+
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-50 px-4 py-4">
+        <div class="max-w-2xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2.5">
+                <div class="bg-purple-600 text-white p-2 rounded-xl shadow-md shadow-purple-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5c.67 0 1.35.09 2 .26 1.78-1.23 3.76-1.26 3.76-1.26s.1 2.14-.6 3.61c.94 1.21 1.48 2.66 1.48 4.23 0 4.14-3.58 7.5-8 7.5s-8-3.36-8-7.5c0-1.57.54-3.02 1.48-4.23-.7-1.47-.6-3.61-.6-3.61s1.98.03 3.76 1.26c.65-.17 1.33-.26 2-.26Z"/><path d="M16 12c-1-.5-2.5-.5-3.5 0"/><path d="M8 12c1-.5 2.5-.5 3.5 0"/><path d="M12 14v.01"/><path d="M9 16c1 .5 2.5.5 3.5 0"/></svg>
+                </div>
+                <span class="text-xl font-extrabold tracking-tight text-slate-900">MIAU<span class="text-purple-600">.AI</span></span>
+            </div>
+            <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full">
+                <span class="w-2 height-2 w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-xs font-semibold text-emerald-700">Model Active</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 max-w-2xl w-full mx-auto px-4 py-8 flex flex-col gap-6">
         
-        <section class="display" id="result">
-            <div class="placeholder-box">Hasil akan muncul di sini...</div>
+        <section class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+            <div class="flex items-center gap-2 mb-3">
+                <svg class="text-purple-600" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500">Input Deskripsi Gambar</h2>
+            </div>
+            
+            <textarea 
+                id="promptInput"
+                placeholder="Contoh: Kucing misterius berambut putih, mata merah menyala, mengenakan jubah armor futuristik gelap, latar belakang kota cyber-punk neon, rendering 4K realistis..."
+                class="w-full h-32 p-4 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition resize-none text-base font-medium placeholder:text-slate-400"
+            ></textarea>
+
+            <div class="flex flex-wrap gap-2 mt-3">
+                <button onclick="addTag('Anime Style')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-1 rounded-md font-medium transition cursor-pointer">+ Anime</button>
+                <button onclick="addTag('4K Resolution HD')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-1 rounded-md font-medium transition cursor-pointer">+ 4K Ultra</button>
+                <button onclick="addTag('Cyberpunk Dark Light')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-1 rounded-md font-medium transition cursor-pointer">+ Cyberpunk</button>
+                <button onclick="addTag('Cinematic Lighting')" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-1 rounded-md font-medium transition cursor-pointer">+ Sinematik</button>
+            </div>
         </section>
-    </div>
-    <script src="script.js"></script>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs">
+            <div class="flex items-center gap-2 mb-4">
+                <svg class="text-slate-500" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="2" x2="6" y1="14" y2="14"/><line x1="10" x2="14" y1="8" y2="8"/><line x1="18" x2="22" y1="16" y2="16"/></svg>
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500">Parameter Model</h2>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-slate-600 block mb-2">Rasio Ukuran Gambar</label>
+                    <div class="grid grid-cols-3 gap-2" id="ratioContainer">
+                        <button onclick="setRatio('1:1')" class="ratio-btn border-2 border-purple-600 bg-purple-50 text-purple-700 py-2.5 rounded-xl text-sm font-semibold transition cursor-pointer flex flex-col items-center justify-center">
+                            <span>1:1</span>
+                            <span class="text-[10px] opacity-75">Square</span>
+                        </button>
+                        <button onclick="setRatio('16:9')" class="ratio-btn border border-slate-200 hover:border-slate-300 text-slate-600 py-2.5 rounded-xl text-sm font-semibold transition cursor-pointer flex flex-col items-center justify-center">
+                            <span>16:9</span>
+                            <span class="text-[10px] opacity-75">Landscape</span>
+                        </button>
+                        <button onclick="setRatio('9:16')" class="ratio-btn border border-slate-200 hover:border-slate-300 text-slate-600 py-2.5 rounded-xl text-sm font-semibold transition cursor-pointer flex flex-col items-center justify-center">
+                            <span>9:16</span>
+                            <span class="text-[10px] opacity-75">Portrait</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pt-2 border-t border-slate-100 space-y-2.5">
+                    <label class="flex items-center gap-3 cursor-pointer py-1">
+                        <input type="checkbox" id="hdUpscale" class="w-4 h-4 accent-purple-600 rounded" checked>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-semibold text-slate-700">Upscale Resolusi Ultra HD 4K</span>
+                            <span class="text-xs text-slate-400">Menajamkan detail mikro pada tekstur gambar.</span>
+                        </div>
+                    </label>
+                    <label class="flex items-center gap-3 cursor-pointer py-1">
+                        <input type="checkbox" id="faceLock" class="w-4 h-4 accent-purple-600 rounded" checked>
+                        <div class="flex flex-col">
+                            <span class="text-sm font-semibold text-slate-700">Konsistensi Wajah Karakter</span>
+                            <span class="text-xs text-slate-400">Menjaga struktur wajah tetap stabil sesuai model dasar.</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <button 
+            id="generateBtn"
+            onclick="generateArt()"
+            class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-base py-4 rounded-2xl shadow-lg shadow-purple-200 hover:shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer transform active:scale-[0.99]"
+        >
+            <span>Hasilkan Gambar (Miau-Art)</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5c.67 0 1.35.09 2 .26 1.78-1.23 3.76-1.26 3.76-1.26s.1 2.14-.6 3.61c.94 1.21 1.48 2.66 1.48 4.23 0 4.14-3.58 7.5-8 7.5s-8-3.36-8-7.5c0-1.57.54-3.02 1.48-4.23-.7-1.47-.6-3.61-.6-3.61s1.98.03 3.76 1.26c.65-.17 1.33-.26 2-.26Z"/></svg>
+        </button>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col gap-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2">
+                    <svg class="text-indigo-600" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500">Kanvas Hasil Output</h2>
+                </div>
+                <button id="downloadBtn" onclick="downloadImage()" class="hidden text-xs bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                    Unduh
+                </button>
+            </div>
+
+            <div id="outputCanvas" class="w-full bg-slate-50 rounded-xl border border-slate-200 overflow-hidden flex flex-col items-center justify-center p-8 transition-all min-h-[350px]">
+                
+                <div id="stateEmpty" class="text-center flex flex-col items-center gap-3">
+                    <div class="text-slate-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-slate-400">Belum Ada Gambar</p>
+                        <p class="text-xs text-slate-400 mt-1">Tulis deskripsi di atas lalu ketik tombol Hasilkan Gambar.</p>
+                    </div>
+                </div>
+
+                <div id="stateLoading" class="hidden text-center flex flex-col items-center gap-4">
+                    <div class="text-purple-600 animate-purr">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5c.67 0 1.35.09 2 .26 1.78-1.23 3.76-1.26 3.76-1.26s.1 2.14-.6 3.61c.94 1.21 1.48 2.66 1.48 4.23 0 4.14-3.58 7.5-8 7.5s-8-3.36-8-7.5c0-1.57.54-3.02 1.48-4.23-.7-1.47-.6-3.61-.6-3.61s1.98.03 3.76 1.26c.65-.17 1.33-.26 2-.26Z"/></svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-slate-700">MIAU AI Sedang Melukis...</p>
+                        <p class="text-xs text-slate-400 mt-1 animate-pulse">Menyelaraskan piksel imajinasi Anda (Estimasi 3 detik)</p>
+                    </div>
+                </div>
+
+                <div id="stateResult" class="hidden w-full h-full flex items-center justify-center">
+                    <img id="resultImage" src="" alt="Miau AI Result" class="max-w-full h-auto rounded-lg shadow-md object-contain">
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs text-slate-400 font-medium">
+        <p>&copy; 2026 MIAU AI Workspace. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        let currentRatio = '1:1';
+
+        function addTag(text) {
+            const input = document.getElementById('promptInput');
+            if(input.value.trim() === "") {
+                input.value = text + ", ";
+            } else {
+                input.value = input.value.trim() + ", " + text + ", ";
+            }
+            input.focus();
+        }
+
+        function setRatio(ratio) {
+            currentRatio = ratio;
+            // Reset style button aktif
+            const buttons = document.querySelectorAll('#ratioContainer button');
+            buttons.forEach(btn => {
+                btn.className = "ratio-btn border border-slate-200 hover:border-slate-300 text-slate-600 py-2.5 rounded-xl text-sm font-semibold transition cursor-pointer flex flex-col items-center justify-center";
+            });
+
+            // Set button aktif yang dipilih
+            event.currentTarget.className = "ratio-btn border-2 border-purple-600 bg-purple-50 text-purple-700 py-2.5 rounded-xl text-sm font-semibold transition cursor-pointer flex flex-col items-center justify-center";
+        }
+
+        function generateArt() {
+            const prompt = document.getElementById('promptInput').value.trim();
+            if (!prompt) {
+                alert("Harap masukkan deskripsi prompt terlebih dahulu agar kucing AI bisa bekerja!");
+                return;
+            }
+
+            const btn = document.getElementById('generateBtn');
+            const stateEmpty = document.getElementById('stateEmpty');
+            const stateLoading = document.getElementById('stateLoading');
+            const stateResult = document.getElementById('stateResult');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const canvas = document.getElementById('outputCanvas');
+
+            // Lock UI State ke Loading
+            btn.disabled = true;
+            btn.innerText = "Mengekstrak Kreativitas... 🐾";
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            stateEmpty.classList.add('hidden');
+            stateResult.classList.add('hidden');
+            downloadBtn.classList.add('hidden');
+            stateLoading.classList.remove('hidden');
+
+            // Atur ukuran box canvas secara visual sesuai aspek rasio yang dipilih
+            if(currentRatio === '16:9') {
+                canvas.style.aspectRatio = "16/9";
+                canvas.style.minHeight = "250px";
+            } else if(currentRatio === '9:16') {
+                canvas.style.aspectRatio = "9/16";
+                canvas.style.minHeight = "450px";
+            } else {
+                canvas.style.aspectRatio = "1/1";
+                canvas.style.minHeight = "350px";
+            }
+
+            // Simulasi Render Logika AI (Bisa diintegrasikan dengan API internal Python Anda di repositori)
+            setTimeout(() => {
+                // Gambar placeholder premium bertema kucing AI keren untuk testing UI
+                const mockImages = {
+                    '1:1': 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop',
+                    '16:9': 'https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?q=80&w=800&auto=format&fit=crop',
+                    '9:16': 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=500&auto=format&fit=crop'
+                };
+
+                const imgResult = document.getElementById('resultImage');
+                imgResult.src = mockImages[currentRatio];
+
+                // Kembalikan UI State ke Sukses / Tampil
+                stateLoading.classList.add('hidden');
+                stateResult.classList.remove('hidden');
+                downloadBtn.classList.remove('hidden');
+
+                btn.disabled = false;
+                btn.innerHTML = `<span>Hasilkan Gambar Baru</span> <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5c.67 0 1.35.09 2 .26 1.78-1.23 3.76-1.26 3.76-1.26s.1 2.14-.6 3.61c.94 1.21 1.48 2.66 1.48 4.23 0 4.14-3.58 7.5-8 7.5s-8-3.36-8-7.5c0-1.57.54-3.02 1.48-4.23-.7-1.47-.6-3.61-.6-3.61s1.98.03 3.76 1.26c.65-.17 1.33-.26 2-.26Z"/></svg>`;
+                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+            }, 3000); // 3 Detik simulasi pemrosesan gambar
+        }
+
+        function downloadImage() {
+            const img = document.getElementById('resultImage');
+            if(img.src) {
+                const a = document.createElement('a');
+                a.href = img.src;
+                a.download = 'MiauAI-Generated-Art.jpg';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        }
+    </script>
 </body>
 </html>
